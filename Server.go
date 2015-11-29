@@ -17,6 +17,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", ColorHandler)
+	r.HandleFunc("/socket", SocketHandler)
 
 	http.ListenAndServe(":8080", r)
 }
