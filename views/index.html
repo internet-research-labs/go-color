@@ -1,19 +1,43 @@
-<div id="whatever"></div>
-<script>
-  ~function () {
-    var ws = new WebSocket("ws://localhost:8080/socket");
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Whatever...</title>
+    <style>
+      #color {
+        display: block;
+        height: 300px;
+        width: 300px;
+        top: 50%;
+        left: 50%;
+        margin-top: -150px;
+        margin-left: -150px;
+        background-color: black;
+        position: absolute;
 
-    ws.onopen = function () {
-    }
+      }
+      </style>
+  </head>
+  <body>
+    <div id="color"></div>
+    <script>
+      ~function () {
+        var ws = new WebSocket("ws://localhost:8080/socket");
 
-    ws.onmessage = function (msg) {
-      console.log(msg.data);
-    }
+        ws.onopen = function () {
+        }
 
-    ws.onerror = function (err) {
-    }
+        ws.onmessage = function (msg) {
+          var data = JSON.parse(msg.data);
+          var el = document.getElementById('color');
+          el.style.backgroundColor = data.Data.Color;
+        }
 
-    ws.onclose = function () {
-    }
-  }();
-</script>
+        ws.onerror = function (err) {
+        }
+
+        ws.onclose = function () {
+        }
+        }();
+      </script>
+    </body>
+  </html>
