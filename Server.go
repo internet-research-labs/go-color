@@ -16,7 +16,7 @@ func main() {
 	fmt.Println("Starting server...")
 
 	r := mux.NewRouter()
-	r.HandleFunc("/request", ColorHandler)
+	r.HandleFunc("/request", HttpHandler)
 	r.HandleFunc("/socket", SocketHandler)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./views/")))
 

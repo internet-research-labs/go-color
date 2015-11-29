@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"image/color"
 	"net/http"
@@ -34,7 +33,8 @@ func MakeColorResponse(c color.RGBA) (resp ColorResponse) {
 	return
 }
 
-func ColorHandler(w http.ResponseWriter, r *http.Request) {
+// Handler for an HTTP Request
+func HttpHandler(w http.ResponseWriter, r *http.Request) {
 	var resp JsendResponse
 	resp.Status = 200
 	resp.Data = MakeColorResponse(TICKER.Color())
@@ -48,6 +48,7 @@ func ColorHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Handler for An Attempted Socket Connection
 func SocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := NewWebSocket(w, r)
 
@@ -62,18 +63,20 @@ func SocketHandler(w http.ResponseWriter, r *http.Request) {
 
 			select {
 			case v := <-conn.send:
-				fmt.Println(v)
-
+				// Create JSON Response
 				var resp JsendResponse
 				resp.Status = 200
 				resp.Data = MakeColorResponse(v)
 
+				// JSON-ify
 				js, jsErr := json.Marshal(resp)
 
+				// Check for errors
 				if jsErr != nil {
 					js = []byte("undefined")
 				}
 
+				// Actually write to the socket
 				conn.ws.WriteMessage(websocket.TextMessage, js)
 			case <-conn.quit:
 				break
