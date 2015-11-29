@@ -7,12 +7,13 @@ import (
 	"time"
 )
 
-var TICKER *ColorTicker = NewColorTicker(30 * time.Second)
+var TICKER (*ColorTicker) = NewColorTicker(30 * time.Second)
 
 type ColorResponse struct {
 	Color         string
 	Complementary [2]string
-	Triad         []string
+	Triadic       []string
+	Tetradic      []string
 }
 
 type JsendResponse struct {

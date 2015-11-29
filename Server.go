@@ -13,7 +13,7 @@ func main() {
 	// Seed
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	fmt.Println("Swag")
+	fmt.Println("Starting server...")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", ColorHandler)
