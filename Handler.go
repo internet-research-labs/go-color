@@ -2,12 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/gorilla/websocket"
 	"image/color"
 	"net/http"
 	"time"
 )
 
-var TICKER (*ColorTicker) = NewColorTicker(30 * time.Second)
+var TICKER (*ColorTicker) = NewColorTicker(1 * time.Second)
 
 type ColorResponse struct {
 	Color         string
@@ -44,4 +46,38 @@ func ColorHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Write(js)
 	}
+}
+
+func SocketHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := NewWebSocket(w, r)
+
+	if err != nil {
+		return
+	}
+
+	TICKER.Pool.Add(conn)
+
+	go func() {
+		for {
+
+			select {
+			case v := <-conn.send:
+				fmt.Println(v)
+
+				var resp JsendResponse
+				resp.Status = 200
+				resp.Data = MakeColorResponse(v)
+
+				js, jsErr := json.Marshal(resp)
+
+				if jsErr != nil {
+					js = []byte("undefined")
+				}
+
+				conn.ws.WriteMessage(websocket.TextMessage, js)
+			case <-conn.quit:
+				break
+			}
+		}
+	}()
 }

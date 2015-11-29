@@ -19,7 +19,6 @@ func Hex(c color.RGBA) string {
 	g := pad(intToHex(c.G), 2)
 	b := pad(intToHex(c.B), 2)
 	return fmt.Sprintf("#%s%s%s", r, g, b)
-
 }
 
 // Return the complementary color

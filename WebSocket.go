@@ -2,17 +2,18 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
-	"log"
+	"image/color"
 	"net/http"
 )
 
 // Websocket connection
 type WebSocket struct {
 	ws   *websocket.Conn
-	send chan []byte
+	send chan color.RGBA
 	quit chan bool
 }
 
+// Global Upgrader
 var UPGRADER = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -27,7 +28,7 @@ func NewWebSocket(w http.ResponseWriter, r *http.Request) (*WebSocket, error) {
 	}
 
 	c := WebSocket{
-		send: make(chan []byte),
+		send: make(chan color.RGBA),
 		quit: make(chan bool),
 		ws:   ws,
 	}
@@ -35,28 +36,6 @@ func NewWebSocket(w http.ResponseWriter, r *http.Request) (*WebSocket, error) {
 	return &c, nil
 }
 
-func (s *WebSocket) Emit(message []byte) {
+func (s *WebSocket) Emit(message color.RGBA) {
 	s.send <- message
-}
-
-// Create a Persistent Websocket Connection
-func SocketHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := NewWebSocket(w, r)
-
-	if err != nil {
-		return
-	}
-
-	log.Print("FUCKKKK")
-
-	go func() {
-		for {
-			select {
-			case <-conn.send:
-				conn.ws.WriteMessage(websocket.TextMessage, []byte("sick"))
-			case <-conn.quit:
-				break
-			}
-		}
-	}()
 }
